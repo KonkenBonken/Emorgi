@@ -15,6 +15,8 @@ fs.readFile('dataset.raw.csv').then(async dataset => {
 	dataset = dataset.split('\n').slice(1, -1).map(line => {
 		[n, emoji, unicode, name, , , , , , , , , , , , img] = line.split(',')
 
+		img = img.replace(/=*"$/, '')
+
 		unicode = unicode.split(' ').map(x =>
 			toB64(parseInt(x.substr(2), 16))
 		).join(' ');
@@ -32,6 +34,7 @@ fs.readFile('dataset.raw.csv').then(async dataset => {
 		return [unicode, name, img].join(',');
 		// unicode -> num -> b64
 		// name -> % = " face " -> + = " with "
+		// img -> b64 image -> add "data:image/png;base64,"
 	}).join(';')
 	fs.writeFile('dataset.csv', dataset)
 });
