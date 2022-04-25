@@ -6,8 +6,14 @@ const { dataset, Emoji } = await import('./database.mjs'),
 	emojilist = document.querySelector('emojilist');
 window.dataset = dataset;
 
+let spawned = 4;
 dataset.forEach(emoji => {
 	if (emoji.unicode.length == 1)
 		emojilist.append(emoji.listElement())
-	else console.log(emoji)
+	else {
+		console.log(emoji);
+		if (!--spawned)
+			emoji.spawnComponents()
+	}
+
 });
