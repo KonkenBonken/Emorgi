@@ -1,6 +1,5 @@
 console.log('App.js running');
 
-// import { dataset } from './database.mjs';
 const { dataset, Emoji } = await import('./database.mjs'),
 	space = document.querySelector('space'),
 	emojilist = document.querySelector('emojilist');

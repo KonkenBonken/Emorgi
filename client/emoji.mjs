@@ -14,9 +14,11 @@ const newDiv = (el = 'div', ...classes) => {
 	},
 	space = document.querySelector('space'),
 	emojilist = document.querySelector('emojilist'),
-	allEmojis = () => Array.from(space.querySelectorAll('.emoji'));
+	allEmojis = () => Array.from(space.querySelectorAll('.emoji')),
+	eventListeners = (events, fun, el = document, once = false) => events.forEach(event => el.addEventListener(event, fun, { once }));
 
-const onMouseUp = fun => document.addEventListener('mouseup', fun, { once: true });
+const onMouseUp = fun => eventListeners(['mouseup', 'touchend'], fun, document, true);
+
 let outside = emojilist.getBoundingClientRect().left;
 document.addEventListener('resize', () => outside = emojilist.getBoundingClientRect().left);
 
@@ -90,7 +92,7 @@ export class Emoji {
 				mouseOffset.x = e.x - left;
 				mouseOffset.y = e.y - top;
 
-				document.addEventListener('mousemove', onMove);
+				eventListeners(['mousemove', 'touchmove'], onMove);
 				div.ToggleAttribute('hover', true);
 
 				onMouseUp(() => {
@@ -107,7 +109,7 @@ export class Emoji {
 
 		if (spawnEvent)
 			setTimeout(() => onClick(spawnEvent))
-		div.On('mousedown', onClick);
+		eventListeners(['mousedown', 'touchstart'], onClick, div);
 
 		div.intersect = () => {
 			const rect = div.getBoundingClientRect();
@@ -139,11 +141,11 @@ export class Emoji {
 	listElement() {
 		const div = this.newElement();
 
-		div.On('mousedown', e => {
+		eventListeners(['mousedown', 'touchstart'], e => {
 			if (e.button !== 0) return;
 			let { left, top } = div.getBoundingClientRect();
 			this.spawn(left, top, e)
-		});
+		}, div);
 
 		this.discover(false);
 		return div;
