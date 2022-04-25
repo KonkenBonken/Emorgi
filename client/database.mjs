@@ -9,7 +9,7 @@ const digit = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_"
 const fromB64 = x => x.split("").reduce((s, v) => s = s * 64 + digit.indexOf(v), 0);
 
 datasetRaw.split(';').forEach((line, i) => {
-	if (i++ > 500) return;
+	// if (i++ > 500) return;
 	let [unicode, name, img] = line.split(',');
 	// unicode -> num -> b64
 	// name -> % = " face " -> + = " with "

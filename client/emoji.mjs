@@ -17,6 +17,8 @@ const newDiv = (el = 'div', ...classes) => {
 	allEmojis = () => Array.from(space.querySelectorAll('.emoji'));
 
 const onMouseUp = fun => document.addEventListener('mouseup', fun, { once: true });
+let outside = emojilist.getBoundingClientRect().left;
+document.addEventListener('resize', () => outside = emojilist.getBoundingClientRect().left);
 
 export class Emoji {
 	constructor(unicode, name, imgSrc) {
@@ -63,7 +65,6 @@ export class Emoji {
 				.Src(this.imgSrc)
 				.Attribute('draggable', false)
 			);
-
 	}
 
 	draggableElement(x = 0, y = 0, spawnEvent) {
@@ -73,13 +74,13 @@ export class Emoji {
 		div.style.left = x + 'px';
 		div.style.top = y + 'px';
 
-		const mouseOffset = {
-				x: x,
-				y: y
-			},
+		let divX = 0;
+
+		const mouseOffset = { x, y },
 
 			onMove = e => {
-				div.style.left = e.x - mouseOffset.x + 'px';
+				divX = e.x - mouseOffset.x
+				div.style.left = divX + 'px';
 				div.style.top = e.y - mouseOffset.y + 'px';
 			},
 			onClick = e => {
@@ -95,6 +96,9 @@ export class Emoji {
 				onMouseUp(() => {
 					document.removeEventListener('mousemove', onMove)
 					div.ToggleAttribute('hover', false);
+
+					if (divX > outside) return div.remove();
+
 					let intersect = div.intersect();
 					if (intersect)
 						console.log(div.merge(intersect), 1);
