@@ -29,6 +29,7 @@ export class Emoji {
 	}
 	newElement() {
 		return newDiv('div', 'emoji')
+			.Title(this.name)
 			.Append(
 				newDiv('img')
 				.Src(this.imgSrc)
