@@ -3,6 +3,7 @@ console.log('Emoji.mjs running');
 const newDiv = (el = 'div', ...classes) => {
 		let div = document.createElement(el);
 		if (classes) classes.forEach(cl => div.classList.add(cl));
+		div.Html = str => { div.innerHTML = str; return div };
 		div.Src = str => { div.src = str; return div };
 		div.Append = (...el) => { if (el[0]) div.append(...el); return div };
 		div.On = function (a, b) { div.addEventListener(b ? a : 'click', b || a); return div };
@@ -22,6 +23,7 @@ export class Emoji {
 		this.unicode = unicode;
 		this.name = name;
 		this.imgSrc = imgSrc;
+		this.discovered = false;
 	}
 
 	static mergeKeys(...keys) {
@@ -34,6 +36,19 @@ export class Emoji {
 
 	get components() {
 		return this.unicode.map(code => window.dataset.get(code))
+	}
+
+	discover(show = true) {
+		if (this.discovered) return;
+		this.discovered = true;
+		if (!show) return;
+		let div = newDiv('div', 'discovered')
+			.Append(
+				this.newElement()
+				.Append(newDiv('h3').Html(this.name))
+			);
+		space.append(div);
+		setTimeout(() => div.remove(), 3000);
 	}
 
 	spawnComponents() {
@@ -126,12 +141,14 @@ export class Emoji {
 			this.spawn(left, top, e)
 		});
 
+		this.discover(false);
 		return div;
 	}
 
 	spawn(x = 0, y = 0, spawnEvent) {
 		const div = this.draggableElement(x, y, spawnEvent)
 		space.append(div);
+		this.discover();
 		return div;
 	}
 }

@@ -59,3 +59,31 @@ space > .emoji {
   position: absolute;
   z-index: 3;
 }
+space > .discovered {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+}
+space > .discovered > .emoji {
+  animation: discover 3s ease-in-out alternate;
+}
+
+@keyframes discover {
+  0%, 100% {
+    width: 0;
+    height: 0;
+  }
+  30%, 50%, 70% {
+    width: 60vmin;
+    height: 60vmin;
+    filter: drop-shadow(0 0 20vmin #ffd);
+  }
+  40%, 60%, 80% {
+    width: 63vmin;
+    height: 63vmin;
+    filter: drop-shadow(0 0 10vmin #ffa);
+  }
+}
