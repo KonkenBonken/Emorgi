@@ -11,6 +11,8 @@ html {
 .emoji {
   width: 2rem;
   height: 2rem;
+  transition: .1s ease;
+  transition-property: filter, width ,height;
 
   > img {
     width: 100%;
@@ -19,6 +21,8 @@ html {
 
   &[hover] {
     filter: drop-shadow(0.06rem 0.13rem 0.25rem #222);
+    width: 2.2rem;
+    height: 2.2rem;
   }
 }
 
