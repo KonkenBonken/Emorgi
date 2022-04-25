@@ -24,9 +24,22 @@ export class Emoji {
 		this.imgSrc = imgSrc;
 	}
 
+	static mergeKeys(...keys) {
+		return keys.flatMap(x => x.split(' ')).sort().join(' ');
+	}
+
 	get key() {
 		return this.unicode.sort().join(' ')
 	}
+
+	get components() {
+		return this.unicode.map(code => window.dataset.get(code))
+	}
+
+	spawnComponents() {
+		return this.components.map(x => x.spawn())
+	}
+
 	newElement() {
 		return newDiv('div', 'emoji')
 			.Title(this.name)
@@ -66,12 +79,42 @@ export class Emoji {
 
 				onMouseUp(() => {
 					document.removeEventListener('mousemove', onMove)
-					div.ToggleAttribute('hover', false);				})
+					div.ToggleAttribute('hover', false);
+					let intersect = div.intersect();
+					if (intersect)
+						console.log(div.merge(intersect), 1);
+				})
 			};
 
 		if (spawnEvent)
 			setTimeout(() => onClick(spawnEvent))
 		div.On('mousedown', onClick);
+
+		div.intersect = () => {
+			const rect = div.getBoundingClientRect();
+			return allEmojis().find(emoji => {
+				const { left, top, bottom, right } = emoji.getBoundingClientRect();
+				return div !== emoji && (rect.top + rect.height > top &&
+					rect.left + rect.width > left &&
+					rect.bottom - rect.height < bottom &&
+					rect.right - rect.width < right);
+			})
+		};
+
+		div.merge = element => {
+			if (!(element && element.classList.contains('emoji') && window.dataset && element.Emoji)) return console.log([element, window.dataset]);
+			const key = Emoji.mergeKeys(this.key, element.Emoji.key);
+			console.log(key, window.dataset.has(key));
+			if (!window.dataset.has(key)) return;
+
+			const { left, top } = element.getBoundingClientRect(),
+				emoji = window.dataset.get(key);
+			console.log(emoji);
+			div.remove();
+			element.remove();
+			return emoji.spawn(left, top);
+		};
+
 		return div;
 	}
 	listElement() {

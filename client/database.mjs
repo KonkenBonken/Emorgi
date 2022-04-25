@@ -8,7 +8,8 @@ export const dataset = new Map();
 const digit = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_";
 const fromB64 = x => x.split("").reduce((s, v) => s = s * 64 + digit.indexOf(v), 0);
 
-datasetRaw.split(';').forEach(line => {
+datasetRaw.split(';').forEach((line, i) => {
+	if (i++ > 500) return;
 	let [unicode, name, img] = line.split(',');
 	// unicode -> num -> b64
 	// name -> % = " face " -> + = " with "
@@ -35,3 +36,12 @@ datasetRaw.split(';').forEach(line => {
 	let emoji = new Emoji(unicode, name, img);
 	dataset.set(emoji.key, emoji);
 });
+
+for (const emoji of dataset.values()) {
+	let newUnicode = emoji.unicode.filter(code => dataset.has(code));
+	if (newUnicode.join() != emoji.unicode.join()) {
+		dataset.delete(emoji.key);
+		emoji.unicode = newUnicode;
+		dataset.set(emoji.key, emoji);
+	}
+}
