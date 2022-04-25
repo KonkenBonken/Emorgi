@@ -15,8 +15,22 @@ datasetRaw.split(';').forEach(line => {
 	// img -> b64 image -> add "data:image/png;base64,"
 
 	unicode = unicode.split(' ').map(x => fromB64(x).toString(16));
-	name = name.replace('%', ' face ').replace('+', ' with ').replace(/\s\s+/g, ' ').trim();
 	img = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEgAAABICA" + img;
+
+	[
+		['face', '%'],
+		['with', '+'],
+		['flag', '@'],
+		['woman', '£'],
+		['button', '$'],
+		['person', '¤'],
+		['family', '€'],
+		['man', '='],
+		['ing', '?'],
+	].reverse().forEach(([word, char]) => {
+		name = name.replace(new RegExp('\\' + char, 'g'), word)
+	});
+	name = name.replace(/\s\s+/g, ' ').trim();
 
 	let emoji = new Emoji(unicode, name, img);
 	dataset.set(emoji.key, emoji);

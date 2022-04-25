@@ -1,5 +1,6 @@
 const fs = require('fs').promises;
-const csv = require('csvtojson')
+const csv = require('csvtojson');
+const lcs = require('common-substrings');
 
 const digit = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_";
 const toB64 = x => x.toString(2).split(/(?=(?:.{6})+(?!.))/g).map(v => digit[parseInt(v, 2)]).join("");
@@ -13,7 +14,7 @@ const toB64 = x => x.toString(2).split(/(?=(?:.{6})+(?!.))/g).map(v => digit[par
 csv().fromFile('dataset.raw.csv').then(async dataset => {
 	dataset = dataset.map(line => {
 
-		let { emoji, unicode, name, JoyPixels: img } = line
+		let { unicode, name, JoyPixels: img } = line
 
 		img = img.substr(56).replace(/=*"$/, '')
 
@@ -21,14 +22,27 @@ csv().fromFile('dataset.raw.csv').then(async dataset => {
 			toB64(parseInt(x.substr(2), 16))
 		).join(' ');
 
-		name = name
-			.replace(/\s*face\s*/g, '%')
-			.replace(/\s*with\s*/g, '+');
+		names1.push(name);
+
+		[
+			['face', '%'],
+			['with', '+'],
+			['flag', '@'],
+			['woman', '£'],
+			['button', '$'],
+			['person', '¤'],
+			['family', '€'],
+			['man', '='],
+			['ing', '?'],
+		].forEach(([word, char]) =>
+			name = name
+			.replace(/^⊛*\s*/, '')
+			.replace(new RegExp(word, 'g'), char));
 
 		return [unicode, name, img].join(',');
 		// unicode -> num -> b64
-		// name -> % = " face " -> + = " with "
+		// name -> char = " word "
 		// img -> b64 image -> add "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEgAAABICA"
-	}).join(';')
-	fs.writeFile('dataset.csv', dataset)
+	}).join(';');
+	fs.writeFile('dataset.csv', dataset);
 });
